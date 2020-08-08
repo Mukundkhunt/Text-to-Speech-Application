@@ -8,7 +8,7 @@
 * Use Amazon Polly to synthesize speech in a variety of language and voices
 
 ## Application Architecture
-
+![Application Architecture](Images/architecture.jpg)
 
 ## Task 1 : Create a DyanmoDB Table
 This application will store infromation about blog posts, including the text and URL of the MP3 file in Amazon DyanmoDB.
