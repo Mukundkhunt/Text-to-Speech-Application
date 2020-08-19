@@ -29,7 +29,7 @@
 8. Information about the post is updated in the DynamoDB table. The URL to the audio file stored in the S3 bucket is saved with the previously stored data.  
 
 ### When the application retrieves information about posts :
-1. The RESTful web service is deployed using Amazon API Gateways. Amazon API Gateway expose the method for retrieving information about posts. These methods contain the text of the post and the link to the S3 bucket where the MP3 file is stored. The web service is invoked by a static webpage hosted on Amazon S3.
+1. The RESTful web service is deployed using **Amazon API Gateways**. Amazon API Gateway expose the method for retrieving information about posts. These methods contain the text of the post and the link to the S3 bucket where the MP3 file is stored. The web service is invoked by a **static webpage hosted on Amazon S3**.
 
 2. Amazon API Gateway invokes the Get Post Lambda function, whcich deploys the logic for retreving the post data.
 
@@ -40,3 +40,33 @@ This application will store infromation about blog posts, including the text and
 1. Table name : posts
 2. Primery key : id (String)
 3. checkbox select : Use default settings
+
+## Task 2 : Create an Amazon S3 Bucket
+You also need to create an Amazon S3 bucket to store all audio files created by the application. You will create a bucket with a unique name, such as audioposts-123
+1. **Bucket name**: audioposts-NUMBER
+
+   - Replace **NUMBER** with a random number
+   - Copy the name of your bucket to your text editor. You will use the bucket name later.
+
+2. **Region**: Do not change the location
+
+3. **Block public access** De-select checkbox
+
+- **Create bucket**
+
+## Task 3 : Create an SNS Topic
+
+- As you probably noticed in the architecture diagram, the logic of converting a post (text) into an audio file will be split into two AWS Lambda functions. This was done for a couple of reasons.
+
+- **First**, it allows the application to use asynchronous calls so that the user who sends a new post to the application immediately receives the ID of the new DynamoDB item, so it knows what to ask for later without having to wait for the conversion to finish. With small posts, the process of converting to audio files can take milliseconds, but with bigger posts (100,000 words or more), converting the text can take a longer. In other use cases, such as real-time streaming, size isn't a problem because Amazon Polly starts to stream speech back as soon as the first bytes are available.
+
+- **Second**, the system uses a Lambda function to convert the posts.
+
+- Given that the process has been divided into two processes, there needs to be a way to integrate them together. You will use **Amazon SNS** to send the message about the new post from the first function to the second function.
+
+1. **Name**: new_posts
+
+2. **Display name**: New posts
+
+3. Copy the **Topic ARN** and paste it into a text editor for later use. It should look similar to:
+   - arn:aws:sns:us-west-2:123456789012:new_posts
