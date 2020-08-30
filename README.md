@@ -70,3 +70,17 @@ You also need to create an Amazon S3 bucket to store all audio files created by 
 
 3. Copy the **Topic ARN** and paste it into a text editor for later use. It should look similar to:
    - arn:aws:sns:us-west-2:123456789012:new_posts
+
+## Task 4 : Create a New Post Lambda Function
+
+- The first Lambda function you will create is the entry point for the application. It receives information about new posts that should be converted into audio files.
+
+1. On the **Services** menu click **Lambda**
+
+2. Create a new (Author from scratch) function using the following setting:
+      
+   - **Function name** : PostReader_NewPost
+   - **Runtime** : Python 3.7
+   - **Expand** : Choose or create an execution role
+   - **Execution role** : Use an existing role
+   - **Function code** : [PostReader_NewPost.py](https://github.com/Mukundkhunt/Text-to-Speech-Application/blob/master/Document/PostReader_NewPost_Func.py)
