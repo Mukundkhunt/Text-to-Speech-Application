@@ -84,3 +84,44 @@ You also need to create an Amazon S3 bucket to store all audio files created by 
    - **Expand** : Choose or create an execution role
    - **Execution role** : Use an existing role
    - **Function code** : [PostReader_NewPost.py](https://github.com/Mukundkhunt/Text-to-Speech-Application/blob/master/Document/PostReader_NewPost_Func.py)
+
+3. In addition, the New Post Lambda function needs to know the name of the DynamoDB table and the SNS topic. To provide these values, we use the following environment variables:
+
+   - **SNS_TOPIC** : the Amazon Resource Name (ARN) of the SNS topic we created
+   - **DB_TABLE_NAME** : the name of the DynamoDB table (in our case, it’s posts)
+
+- As shown in the following code, this Lambda function does the following:
+  1.  Retrieves two input parameters:
+      - **Voice** – one of dozens of voices that are supported by Amazon Polly
+      - **Text** – the text of the post that we want to convert into an audio file
+  2.  Creates a new record in the DynamoDB table with information about the new post
+
+  3. Publishes information about the new post to SNS (the ID of the DynamoDB item/post ID is published there as a message)
+  
+  4.  Returns the ID of the DynamoDB item to the user
+
+
+## Task 5 : Create a Convert to Audio Lambda Function
+1. On the **Services** menu click **Lambda**
+
+2. Create a new (Author from scratch) function using the following setting:
+      
+   - **Function name** : ConvertToAudio
+   - **Runtime** : Python 3.7
+   - **Expand** : Choose or create an execution role
+   - **Execution role** : Use an existing role
+   - **Function code** : [ConvertToAudio.py](https://github.com/Mukundkhunt/Text-to-Speech-Application/blob/master/Document/ConvertToAudio_Func.py)
+
+3. As with the New Post function, we need to tell this Lambda function which services it can interact with.  To provide these values, we use the following environment variables and values:
+
+   - **DB_TABLE_NAME** : The name of the DynamoDB table (in our case, it’s posts )
+   
+   - **BUCKET_NAME** : The name of the S3 bucket that we created to store MP3 files
+
+- This Lambda function does the following:
+
+   1. Retrieves the ID of the **DynamoDB** item (post ID) which should be converted into an audio file from the input message (**SNS** event)
+   2. Retrieves the item from **DynamoDB**
+   3. Converts the text into an audio stream
+   4. Places the audio (MP3) file into an **S3** bucket
+   5. Updates the **DynamoDB** table with a reference to the **S3** bucket and the new status
